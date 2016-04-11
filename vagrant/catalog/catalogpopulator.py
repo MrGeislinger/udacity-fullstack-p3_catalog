@@ -8,11 +8,8 @@ import random
 
 
 engine = create_engine('sqlite:///catalog.db')
-
 Base.metadata.bind = engine
-
 DBSession = sessionmaker(bind=engine)
-
 session = DBSession()
 
 
@@ -34,8 +31,8 @@ session.commit()
 
 items = ['Shinguards','Jersey','Soccer Cleats','Goggles','Snowboard','Stick',\
  'Bat']
-
 categories = [ soccer,soccer,soccer,snowboarding,snowboarding,hockey,baseball]
+itemsWithCategories = zip(items,categories):
 
 images = {'Shinguards':"http://ep.yimg.com/ay/yhst-96316601417599/nike-usa-mercurial-lite-shinguards-royal-5.jpg",
 'Jersey':"http://image.made-in-china.com/4f0j00JMetfqWlCVog/2012-New-Style-Football-Jersey-Sport-Jersey-Soccer-Shirt.jpg",
@@ -57,9 +54,9 @@ def CreateRandomDate():
 	date = today - datetime.timedelta(days = days_ago)
 	return date
 
-for i,c in zip(items,categories):
-    print c.id, c.name
-    new_item = Item(name = i,category_id = c.id,image=images[i],
-     description = CreateDescription(i,c),date_added = CreateRandomDate())
+
+for i,c in itemsWithCategories:
+    new_item = Item( name = i, category_id = c.id, image=images[i],
+     description = CreateDescription(i,c), date_added = CreateRandomDate() )
     session.add(new_item)
     session.commit()

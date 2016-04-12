@@ -17,7 +17,7 @@ class webServerHandler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         try:
-            if self.path.endswith("/") or self.path.endswith("catalog/")::
+            if self.path.endswith("/") or self.path.endswith("catalog/"):
                 categories = session.query(Category).all()
                 output = ""
                 self.send_response(200)

@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify
 app = Flask(__name__)
 
 # Import CRUD Operations from Lesson 1
@@ -55,6 +55,13 @@ def item(category_name, item_name):
                                       Item.name == item_name).one()
     return render_template('item.html', categories=categories, item=item,
                             category=category_name)
+
+# Returning JSON for a category's items
+@app.route('/catalog/<string:category_name>.json')
+def category_json(category_name):
+    cat_id = session.query(Category).filter_by(name=category_name).first().id
+    items = session.query(Item).filter_by(category_id=cat_id).all()
+    return jsonify(Items=[i.serialize for i in items])
 
 if __name__ == '__main__':
     app.debug = True

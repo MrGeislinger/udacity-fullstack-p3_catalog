@@ -40,15 +40,15 @@ div#categories {
   border-right-style: solid;
 }
 
-div#items-recent {
+div#recent-items {
   float: left;
   padding: 5px 5px 5px 25px;
 }
 
-.item {
+.list-recent-items {
   color: white;
 }
 
-.item-category {
+.list-categories {
   color: #4d4d4d;
 }

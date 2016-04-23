@@ -43,6 +43,19 @@ def category(category_name):
     return render_template('category.html', categories=categories, items=items,
                             category=category_name)
 
+# Item page
+@app.route('/catalog/<string:category_name>/<string:item_name>/')
+def item(category_name, item_name):
+    # Find categories
+    categories = session.query(Category).all()
+    #Get items from category
+    cat_id = session.query(Category).filter(Category.name == category_name)\
+             .first().id
+    item = session.query(Item).filter(Item.category_id == cat_id,
+                                      Item.name == item_name).one()
+    return render_template('item.html', categories=categories, item=item,
+                            category=category_name)
+
 if __name__ == '__main__':
     app.debug = True
     app.run(host='0.0.0.0', port=5000)

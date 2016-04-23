@@ -1,6 +1,6 @@
 <html>
 <head>
-  <link rel="stylesheet" href="http://0.0.0.0:5000/styles.css">
+  <link rel="stylesheet" href="{{url_for('style')}}">
 </head>
 <body>
 <!--Title Bar -->
@@ -21,7 +21,7 @@
     </div>
   </div>
   <div id="items">
-    <h2>{{category.name}} Items</h2>
+    <h2>{{category}} Items</h2>
     <div class="list-items">
       <ul>
         {% for i in items %}

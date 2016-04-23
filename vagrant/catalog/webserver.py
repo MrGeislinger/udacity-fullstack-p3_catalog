@@ -36,14 +36,12 @@ def catalog():
 def category(category_name):
     # Find categories
     categories = session.query(Category).all()
-    # TODO(VictorLoren): Read in recent items (make it a list)
-    recent_items = []
     #Get items from category
     cat_id = session.query(Category).filter(Category.name == category_name)\
              .first().id
     items = session.query(Item).filter(Item.category_id == cat_id)
     return render_template('category.html', categories=categories, items=items,
-                            recent_items=recent_items, category=category)
+                            category=category_name)
 
 if __name__ == '__main__':
     app.debug = True

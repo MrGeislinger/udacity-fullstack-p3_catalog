@@ -27,9 +27,8 @@ class webServerHandler(BaseHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(output)
                 return
-
             # Home page
-            if self.path.endswith('/') or self.path.endswith('catalog/'):
+            elif self.path.endswith('/') or self.path.endswith('catalog/'):
                 categories = session.query(Category).all()
                 self.send_response(200)
                 self.send_header('Content-type', 'text/html')
@@ -48,10 +47,9 @@ class webServerHandler(BaseHTTPRequestHandler):
                     output = html_file.read()\
                              .replace('%CATEGORIES', all_categories)\
                              .replace('%RECENT_ITEMS', all_recent_items)
-
-
                 self.wfile.write(output)
                 return
+            # Wrong address
             else:
                 self.send_error(404, 'File Not Found: %s' % self.path)
         except IOError:

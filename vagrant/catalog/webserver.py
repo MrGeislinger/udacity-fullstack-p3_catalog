@@ -36,12 +36,14 @@ class webServerHandler(BaseHTTPRequestHandler):
                 # Find categories
                 output_categories = []
                 for category in categories:
-                    output_categories.append('<h3>%s</h3>' %category.name)
+                    category_path = self.path + category.name
+                    output_categories.append('<a href="%s"><h3>%s</h3></a>'
+                                             % (category_path, category.name) )
                 all_categories = ''.join(output_categories)
                 # Find recent items
                 output_recent_items = []
                 all_recent_items = ''.join(output_recent_items)
-                # TODO(VictorLoren): Read in recent items
+                # TODO(VictorLoren): Read in recent items (make it a list)
                 # Read in HTML template and replace parts
                 with open('website_template/index.html','r') as html_file:
                     output = html_file.read()\
@@ -49,6 +51,7 @@ class webServerHandler(BaseHTTPRequestHandler):
                              .replace('%RECENT_ITEMS', all_recent_items)
                 self.wfile.write(output)
                 return
+            # TODO(VictorLoren): Crete category page
             # Wrong address
             else:
                 self.send_error(404, 'File Not Found: %s' % self.path)

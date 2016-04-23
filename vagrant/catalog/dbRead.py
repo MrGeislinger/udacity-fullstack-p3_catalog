@@ -8,11 +8,8 @@ import random
 
 
 engine = create_engine('sqlite:///catalog.db')
-
 Base.metadata.bind = engine
-
 DBSession = sessionmaker(bind=engine)
-
 session = DBSession()
 
 def readItems():

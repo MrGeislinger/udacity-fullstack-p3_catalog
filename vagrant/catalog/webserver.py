@@ -22,7 +22,7 @@ def style():
 
 # Home page
 @app.route('/')
-@app.route('/catalog')
+@app.route('/catalog/')
 def catalog():
     # Find categories
     categories = session.query(Category).all()

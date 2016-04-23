@@ -1,6 +1,6 @@
 <html>
 <head>
-  <link rel="stylesheet" href="http://0.0.0.0:5000/styles.css">
+  <link rel="stylesheet" href="{{url_for('style')}}">
 </head>
 <body>
 <!--Title Bar -->
@@ -14,7 +14,7 @@
     <h2>Categories</h2>
     <div class="list-categories">
       {% for c in categories %}
-      <a href="/catalog/{{c.name}}">
+      <a href="{{url_for('category', category_name = c.name)}}">
         <h3>{{c.name}}</h3>
       </a>
       {% endfor %}

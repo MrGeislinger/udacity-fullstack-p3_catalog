@@ -16,7 +16,7 @@ session = DBSession()
 # CSS
 @app.route('/styles.css')
 def style():
-    with open('website_template/styles.css','r') as stylesheet:
+    with open('templates/styles.css','r') as stylesheet:
         output = stylesheet.read()
     return output
 

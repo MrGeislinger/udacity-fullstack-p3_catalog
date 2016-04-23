@@ -1,0 +1,38 @@
+<html>
+<head>
+  <link rel="stylesheet" href="http://0.0.0.0:5000/styles.css">
+</head>
+<body>
+<!--Title Bar -->
+<div id="title-bar">
+  <h1>Catalog App</h1>
+</div>
+
+<!--Content-->
+<div id="content-area">
+  <div id="categories">
+    <h2>Categories</h2>
+    <div class="list-categories">
+      {% for c in categories %}
+      <a href="../{{c.name}}">
+        <h3>{{c.name}}</h3>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+  <div id="items">
+    <h2>{{category.name}} Items</h2>
+    <div class="list-items">
+      <ul>
+        {% for i in items %}
+        <li>
+          <a href="{{i.name}}">{{i.name}}</a>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,36 @@
+<html>
+<head>
+  <link rel="stylesheet" href="http://0.0.0.0:5000/styles.css">
+</head>
+<body>
+<!--Title Bar -->
+<div id="title-bar">
+  <h1>Catalog App</h1>
+</div>
+
+<!--Content-->
+<div id="content-area">
+  <div id="categories">
+    <h2>Categories</h2>
+    <div class="list-categories">
+      {% for c in categories %}
+      <a href="catalog/{{c.name}}">
+        <h3>{{c.name}}</h3>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+  <div id="recent-items">
+    <h2>Recent Items</h2>
+    <div class="list-recent-items">
+      <ul>
+        {% for ri in recent_items %}
+        <li>{{ri.name}}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

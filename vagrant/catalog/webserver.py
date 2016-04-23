@@ -18,7 +18,7 @@ class webServerHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         try:
             # Allow for the stylesheet
-            if self.path.endswith("styles.css"):
+            if self.path.endswith('styles.css'):
                 categories = session.query(Category).all()
                 with open('website_template/styles.css','r') as stylesheet:
                     output = stylesheet.read()
@@ -28,7 +28,8 @@ class webServerHandler(BaseHTTPRequestHandler):
                 self.wfile.write(output)
                 return
 
-            if self.path.endswith("/") or self.path.endswith("catalog/"):
+            # Home page
+            if self.path.endswith('/') or self.path.endswith('catalog/'):
                 categories = session.query(Category).all()
                 self.send_response(200)
                 self.send_header('Content-type', 'text/html')
@@ -36,7 +37,7 @@ class webServerHandler(BaseHTTPRequestHandler):
                 # Find categories
                 output_categories = []
                 for category in categories:
-                    output_categories.append("<h3>%s</h3>" %category.name)
+                    output_categories.append('<h3>%s</h3>' %category.name)
                 all_categories = ''.join(output_categories)
                 # Find recent items
                 output_recent_items = []

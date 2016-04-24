@@ -63,6 +63,23 @@ def category_json(category_name):
     items = session.query(Item).filter_by(category_id=cat_id).all()
     return jsonify(Items=[i.serialize for i in items])
 
+# Returning JSON for a category's items
+@app.route('/catalog.json')
+def catalog_json():
+    categories = session.query(Category).all()
+    serializedCategories = []
+    for c in categories:
+        # Find all this category's items
+        items = session.query(Item).filter_by(category_id = c.id).all()
+        serializedItems = []
+        for i in items:
+            serializedItems.append(i.serialize)
+        # Add data into this category
+        category = c.serialize
+        category['Items'] = serializedItems
+        serializedCategories.append(category)
+    return jsonify(Category=serializedCategories)
+
 if __name__ == '__main__':
     app.debug = True
     app.run(host='0.0.0.0', port=5000)

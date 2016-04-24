@@ -37,11 +37,11 @@ def category(category_name):
     # Find categories
     categories = session.query(Category).all()
     #Get items from category
-    cat_id = session.query(Category).filter(Category.name == category_name)\
+    cat_id = session.query(Category).filter_by(name=category_name)\
              .first().id
-    items = session.query(Item).filter(Item.category_id == cat_id)
-    return render_template('category.html', categories=categories, items=items,
-                            category=category_name)
+    items = session.query(Item).filter_by(category_id=cat_id)
+    return render_template('category.html', categories=categories,
+                            items=items, category=category_name)
 
 # Item page
 @app.route('/catalog/<string:category_name>/<string:item_name>/')
@@ -49,12 +49,25 @@ def item(category_name, item_name):
     # Find categories
     categories = session.query(Category).all()
     #Get items from category
-    cat_id = session.query(Category).filter(Category.name == category_name)\
+    cat_id = session.query(Category).filter_by(name=category_name)\
              .first().id
-    item = session.query(Item).filter(Item.category_id == cat_id,
-                                      Item.name == item_name).one()
+    item = session.query(Item).filter_by(category_id=cat_id,
+                                         name=item_name).one()
     return render_template('item.html', categories=categories, item=item,
                             category=category_name)
+
+# Add new item (new or existing category)
+@app.route('/catalog/new')
+def new_item():
+    return
+# Edit existing item
+@app.route('/catalog/<string:category_name>/<string:item_name>/edit')
+def edit_item():
+    return
+# Delete item
+@app.route('/catalog/<string:category_name>/<string:item_name>/delete')
+def delete_item():
+    return
 
 # Returning JSON for a category's items
 @app.route('/catalog/<string:category_name>.json')

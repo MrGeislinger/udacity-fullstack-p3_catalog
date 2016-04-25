@@ -59,14 +59,26 @@ def item(category_name, item_name):
 # Add new item (new or existing category)
 @app.route('/catalog/new')
 def new_item():
+    # Check if category already exists, then use that category id
+    # If not, create new category
+    # Add item with category id
+    # Send a success message
     return
 # Edit existing item
 @app.route('/catalog/<string:category_name>/<string:item_name>/edit')
 def edit_item():
+    # Check if category is changed
+    # If new category, create new category
+    # Edit data
+    # Send a success message
     return
 # Delete item
 @app.route('/catalog/<string:category_name>/<string:item_name>/delete')
 def delete_item():
+    # Check if this item is all that is left in category
+    # If yes, delete category after item delete
+    # Delete item
+    # Send a success message
     return
 
 # Returning JSON for a category's items
@@ -95,4 +107,4 @@ def catalog_json():
 
 if __name__ == '__main__':
     app.debug = True
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=8000)

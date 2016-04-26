@@ -1,0 +1,29 @@
+<html>
+<head>
+  <link rel="stylesheet" href="{{url_for('static', filename='styles.css')}}">
+</head>
+<body>
+<!--Title Bar -->
+<div id="title-bar">
+  <h1><a href="{{url_for('catalog')}}">Catalog App</a></h1>
+</div>
+
+<!--Content-->
+<div id="content-area">
+  <div id="categories">
+    <h2>Categories</h2>
+    <div class="list-categories">
+      {% for c in categories %}
+      <a href="{{url_for('category', category_name=c.name)}}">
+        <h3>{{c.name}}</h3>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+  <div id="items">
+    <!--Button to confirm deletion-->
+  </div>
+</div>
+
+</body>
+</html>

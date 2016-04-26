@@ -59,27 +59,35 @@ def item(category_name, item_name):
 # Add new item (new or existing category)
 @app.route('/catalog/new')
 def new_item():
+    # Find categories
+    categories = session.query(Category).all()
     # Check if category already exists, then use that category id
     # If not, create new category
     # Add item with category id
     # Send a success message
-    return
+    return render_template('item-new.html', categories=categories)
 # Edit existing item
 @app.route('/catalog/<string:category_name>/<string:item_name>/edit')
-def edit_item():
+def edit_item(category_name, item_name):
+    # Find categories
+    categories = session.query(Category).all()
     # Check if category is changed
     # If new category, create new category
     # Edit data
     # Send a success message
-    return
+    return render_template('item-edit.html', categories=categories, item=item,
+                            category=category_name)
 # Delete item
 @app.route('/catalog/<string:category_name>/<string:item_name>/delete')
-def delete_item():
+def delete_item(category_name, item):
+    # Find categories
+    categories = session.query(Category).all()
     # Check if this item is all that is left in category
     # If yes, delete category after item delete
     # Delete item
     # Send a success message
-    return
+    return render_template('item-delete.html', categories=categories, item=item,
+                            category=category_name)
 
 # Returning JSON for a category's items
 @app.route('/catalog/<string:category_name>.json')

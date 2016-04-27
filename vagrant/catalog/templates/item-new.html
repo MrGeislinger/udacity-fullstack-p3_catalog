@@ -21,13 +21,23 @@
     </div>
   </div>
   <div id="items">
-    <!--Create New Item Form-->
-    <!--Name of the item-->
-    <!--Category selected from dropdown-->
-    <!--If "New Category" selected, allow user to create new category-->
-    <!--Description-->
-    <!--image URL-->
-    <!--Save date added-->
+    <form method="POST" enctype="multipart/form-data"
+          action="{{url_for('new_item')}}">
+      <p>Name of item:</p>
+      <input name="newItemName" type="text" size="30">
+      <p>Category:</p>
+      <!--Category selected from dropdown-->
+      <!--If "New Category" selected, allow user to create new category-->
+      <input name="categoryName" type="text" size="30">
+      <p>Description:</p>
+      <input name="newItemDesc" type="text" size="140">
+      <p>Image URL:</p>
+      <input name="newItemURL" type="text" placeholder="URL">
+      <input type='submit' value='Create'>
+      <!--Save date added-->
+    </form>
+
+
   </div>
 </div>
 

@@ -50,7 +50,7 @@ def item(category_name, item_name):
     categories = session.query(Category).all()
     #Get items from category
     cat_id = session.query(Category).filter_by(name=category_name).first().id
-    item = session.query(Item).filter_by(category_id=cat_id,name=item_name).one()
+    item=session.query(Item).filter_by(category_id=cat_id, name=item_name).one()
     return render_template('item.html', categories=categories, item=item,
                             category=category_name)
 

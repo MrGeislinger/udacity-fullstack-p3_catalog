@@ -101,17 +101,22 @@ def edit_item(category_name, item_name):
 def delete_item(category_name, item_name):
     # Find categories
     categories = session.query(Category).all()
-    cat_id = session.query(Category).filter_by(name=category_name).first().id
+    category = session.query(Category).filter_by(name=category_name).first()
+    cat_id = category.id
     item=session.query(Item).filter_by(category_id=cat_id, name=item_name).one()
     if request.method == 'POST':
         # Check if this item is all that is left in category
-        # If yes, delete category after item delete
+        items_in_category = session.query(Item).filter_by(category_id=cat_id)
+        num_of_items = items_in_category.count()
         # Delete item
         session.delete(item)
+        # If yes, delete category after item delete
+        if num_of_items == 1:
+            session.delete(category)
         session.commit()
         # Send a success message
         # Return to category page
-        return redirect(url_for('category', category_name=category_name))
+        return redirect(url_for('catalog'))
     else:
         return render_template('item-delete.html', categories=categories,
                                 item=item, category=category_name)

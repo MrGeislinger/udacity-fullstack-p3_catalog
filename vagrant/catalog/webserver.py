@@ -96,15 +96,24 @@ def edit_item(category_name, item_name):
     return render_template('item-edit.html', categories=categories, item=item,
                             category=category_name)
 # Delete item
-@app.route('/catalog/<string:category_name>/<string:item_name>/delete')
-def delete_item(category_name, item):
+@app.route('/catalog/<string:category_name>/<string:item_name>/delete',
+           methods=['GET','POST'])
+def delete_item(category_name, item_name):
     # Find categories
     categories = session.query(Category).all()
-    # Check if this item is all that is left in category
-    # If yes, delete category after item delete
-    # Delete item
-    # Send a success message
-    return render_template('item-delete.html', categories=categories, item=item,
+    cat_id = session.query(Category).filter_by(name=category_name).first().id
+    item=session.query(Item).filter_by(category_id=cat_id, name=item_name).one()
+    if request.method == 'POST':
+        # Check if this item is all that is left in category
+        # If yes, delete category after item delete
+        # Delete item
+        session.delete(item)
+        session.commit()
+        # Send a success message
+        # Return to category page
+        return redirect(url_for('category', category_name=category_name))
+    else:
+        return render_template('item-delete.html', categories=categories, item=item,
                             category=category_name)
 
 # Returning JSON for a category's items

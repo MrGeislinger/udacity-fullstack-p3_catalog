@@ -55,7 +55,7 @@ def item(category_name, item_name):
                             category=category_name)
 
 # Add new item (new or existing category)
-@app.route('/catalog/new', methods=['GET','POST'])
+@app.route('/catalog/new/', methods=['GET','POST'])
 def new_item():
     # Find categories
     categories = session.query(Category).all()
@@ -113,8 +113,8 @@ def delete_item(category_name, item_name):
         # Return to category page
         return redirect(url_for('category', category_name=category_name))
     else:
-        return render_template('item-delete.html', categories=categories, item=item,
-                            category=category_name)
+        return render_template('item-delete.html', categories=categories,
+                                item=item, category=category_name)
 
 # Returning JSON for a category's items
 @app.route('/catalog/<string:category_name>.json')

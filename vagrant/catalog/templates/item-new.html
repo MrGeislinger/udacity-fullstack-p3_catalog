@@ -27,8 +27,12 @@
       <input name="newItemName" type="text" size="30">
       <p>Category:</p>
       <!--Category selected from dropdown-->
+      <select name="categoryName">
+        {% for c in categories %}
+          <option value="{{c.name}}">{{c.name}}</option>
+        {% endfor %}
+      </select>
       <!--If "New Category" selected, allow user to create new category-->
-      <input name="categoryName" type="text" size="30">
       <p>Description:</p>
       <input name="newItemDesc" type="text" size="140">
       <p>Image URL:</p>

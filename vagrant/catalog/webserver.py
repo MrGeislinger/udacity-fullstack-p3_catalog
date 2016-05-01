@@ -155,7 +155,8 @@ def delete_item(category_name, item_name):
         if num_of_items == 1:
             session.delete(category)
         session.commit()
-        # TODO(VictorLoren): Send a success message
+        # Send a success message
+        flash("%s item has been deleted." %item.name)
         # Return to category page
         return redirect(url_for('catalog'))
     else:

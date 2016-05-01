@@ -1,5 +1,5 @@
 from datetime import date
-from flask import Flask, render_template, request, redirect, url_for, jsonify
+from flask import Flask, render_template, request, redirect, url_for, jsonify, flash
 app = Flask(__name__)
 
 # Import CRUD Operations from Lesson 1
@@ -63,7 +63,8 @@ def new_item():
     if request.method == 'POST':
         # Check that user doesn't enter an empty string
         if request.form['newItemName'] == '':
-            # TODO(VictorLoren): Give an error message
+            # Give an error message
+            flash("The item wasn't added! You need to type a name for the item!")
             # Return to new item page
             return render_template('item-new.html', categories=categories)
         # Check if user selected "New Category" in dropdown
@@ -84,7 +85,6 @@ def new_item():
                        category_id=cat_id)
         session.add(newItem)
         session.commit()
-        # Send a success message
         # Go back to main page
         return redirect(url_for('item', item_name=request.form['newItemName'],
                                 category_name=categoryName))
@@ -186,5 +186,6 @@ def catalog_json():
     return jsonify(Category=serializedCategories)
 
 if __name__ == '__main__':
+    app.secret_key = 'very_secret_key'
     app.debug = True
     app.run(host='0.0.0.0', port=8000)

@@ -21,6 +21,15 @@
     </div>
   </div>
   <div id="items">
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul>
+          {% for message in messages %}
+            <li><strong>{{message}}</strong></li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
     <form method="POST" enctype="multipart/form-data"
           action="{{url_for('new_item')}}">
       <p>Name of item:</p>

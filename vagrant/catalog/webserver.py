@@ -128,7 +128,8 @@ def edit_item(category_name, item_name):
         # Save edits officially to database
         session.add(item)
         session.commit()
-        # TODO(VictorLoren): Send a success message
+        # Send a success message
+        flash("Your item has been edited!")
         # Go back to main page
         return redirect(url_for('item', item_name=request.form['itemName'],
                                 category_name=categoryName))

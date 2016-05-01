@@ -21,6 +21,15 @@
     </div>
   </div>
   <div id="items">
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul>
+          {% for message in messages %}
+            <li><strong>{{message}}</strong></li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
     <h2>
       {{item.name}} for
       <a href="{{url_for('category', category_name=category)}}">{{category}}</a>

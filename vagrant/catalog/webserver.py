@@ -61,6 +61,11 @@ def new_item():
     categories = session.query(Category).all()
     # If user submits form to create new item
     if request.method == 'POST':
+        # Check that user doesn't enter an empty string
+        if request.form['newItemName'] == '':
+            # TODO(VictorLoren): Give an error message
+            # Return to new item page
+            return render_template('item-new.html', categories=categories)
         # Check if category already exists, then use that category id
         categoryName = request.form['categoryName']
         category = session.query(Category).filter_by(name=categoryName).first()
@@ -98,7 +103,7 @@ def edit_item(category_name, item_name):
     if request.method == 'POST':
         # Check if category already exists, then use that category id
         categoryName = request.form['categoryName']
-        # If not, create new category in database
+        # TODO(VictorLoren): If not, create new category in database
         # Get category id for new item
         cat_id = session.query(Category).filter_by(name=categoryName).first().id
         # Save edits to item
@@ -111,7 +116,7 @@ def edit_item(category_name, item_name):
         print "saving edits..."
         session.add(item)
         session.commit()
-        # Send a success message
+        # TODO(VictorLoren): Send a success message
         # Go back to main page
         print "returning to main page..."
         return redirect(url_for('item', item_name=request.form['itemName'],
@@ -138,7 +143,7 @@ def delete_item(category_name, item_name):
         if num_of_items == 1:
             session.delete(category)
         session.commit()
-        # Send a success message
+        # TODO(VictorLoren): Send a success message
         # Return to category page
         return redirect(url_for('catalog'))
     else:

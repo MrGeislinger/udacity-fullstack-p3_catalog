@@ -25,19 +25,23 @@
           action="{{url_for('edit_item', category_name=category,
                             item_name=item.name)}}">
       <p>Name of item:</p>
-      <input name="itemName" type="text" size="30">
+      <input name="itemName" type="text" size="30" value="{{item.name}}">
       <p>Category:</p>
       <!--Category selected from dropdown-->
       <select name="categoryName">
         {% for c in categories %}
-          <option value="{{c.name}}">{{c.name}}</option>
+          <option value="{{c.name}}"
+          {% if c.id == item.category_id %}
+            selected
+          {% endif %}
+          >{{c.name}}</option>
         {% endfor %}
       </select>
       <!--If "New Category" selected, allow user to create new category-->
       <p>Description:</p>
-      <input name="itemDesc" type="text" size="140">
+      <input name="itemDesc" type="text" size="140" value="{{item.description}}">
       <p>Image URL:</p>
-      <input name="itemURL" type="text" placeholder="URL">
+      <input name="itemURL" type="text" value="{{item.image}}">
       <input type='submit' value='Edit item'>
     </form>
     <!-- Return to item's page if user doesn't edit item -->

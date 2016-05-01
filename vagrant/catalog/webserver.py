@@ -113,7 +113,8 @@ def edit_item(category_name, item_name):
         # Send a success message
         # Go back to main page
         print "returning to main page..."
-        return redirect(url_for('catalog'))
+        return redirect(url_for('item', item_name=request.form['itemName'],
+                                category_name=categoryName))
     else:
         return render_template('item-edit.html', categories=categories, item=item,
                             category=category_name)

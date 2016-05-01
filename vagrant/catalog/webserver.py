@@ -66,14 +66,15 @@ def new_item():
             # TODO(VictorLoren): Give an error message
             # Return to new item page
             return render_template('item-new.html', categories=categories)
-        # Check if category already exists, then use that category id
-        categoryName = request.form['categoryName']
-        category = session.query(Category).filter_by(name=categoryName).first()
-        # If not, create new category in database
-        if category == None:
+        # Check if user selected "New Category" in dropdown
+        if request.form['categoryName'] == 'newCategory':
+            # Create new category in database from user input
+            categoryName = request.form['newCat']
             newCategory = Category(name=categoryName)
             session.add(newCategory)
             session.commit()
+        else:
+            categoryName = request.form['categoryName']
         # Get category id for new item
         cat_id = session.query(Category).filter_by(name=categoryName).first().id
         newItem = Item(name=request.form['newItemName'],

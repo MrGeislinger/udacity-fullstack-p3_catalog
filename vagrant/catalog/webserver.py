@@ -164,13 +164,21 @@ def delete_item(category_name, item_name):
                                 item=item, category=category_name)
 
 # Returning JSON for a category's items
+@app.route('/catalog/<string:category_name>/<string:item_name>.json')
+def item_json(category_name, item_name):
+    cat_id = session.query(Category).filter_by(name=category_name).first().id
+    item = session.query(Item).filter_by(category_id=cat_id, name=item_name).one()
+    return jsonify(item.serialize)
+
+
+# Returning JSON for a category
 @app.route('/catalog/<string:category_name>.json')
 def category_json(category_name):
     cat_id = session.query(Category).filter_by(name=category_name).first().id
     items = session.query(Item).filter_by(category_id=cat_id).all()
     return jsonify(Items=[i.serialize for i in items])
 
-# Returning JSON for a category's items
+# Returning JSON for catalog
 @app.route('/catalog.json')
 def catalog_json():
     categories = session.query(Category).all()
@@ -186,6 +194,8 @@ def catalog_json():
         category['Items'] = serializedItems
         serializedCategories.append(category)
     return jsonify(Category=serializedCategories)
+
+
 
 if __name__ == '__main__':
     app.secret_key = 'very_secret_key'

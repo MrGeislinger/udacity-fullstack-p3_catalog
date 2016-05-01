@@ -102,24 +102,28 @@ def edit_item(category_name, item_name):
     item=session.query(Item).filter_by(category_id=cat_id, name=item_name).one()
     # Edit data
     if request.method == 'POST':
-        # Check if category already exists, then use that category id
-        categoryName = request.form['categoryName']
-        # TODO(VictorLoren): If not, create new category in database
+        # Check if user selected "New Category" in dropdown
+        if request.form['categoryName'] == 'newCategory':
+            # Create new category in database from user input
+            categoryName = request.form['newCat']
+            newCategory = Category(name=categoryName)
+            session.add(newCategory)
+            session.commit()
+            # TODO(VictorLoren): Check if this was the last item in old category
+        else:
+            categoryName = request.form['categoryName']
         # Get category id for new item
         cat_id = session.query(Category).filter_by(name=categoryName).first().id
         # Save edits to item
-        print "making edits...."
         item.name = request.form['itemName']
         item.description = request.form['itemDesc']
         item.image = request.form['itemURL']
         item.category_id = cat_id
         # Save edits officially to database
-        print "saving edits..."
         session.add(item)
         session.commit()
         # TODO(VictorLoren): Send a success message
         # Go back to main page
-        print "returning to main page..."
         return redirect(url_for('item', item_name=request.form['itemName'],
                                 category_name=categoryName))
     else:

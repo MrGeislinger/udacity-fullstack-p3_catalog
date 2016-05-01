@@ -99,8 +99,8 @@ def edit_item(category_name, item_name):
     categories = session.query(Category).all()
     # Get category id for edited item
     oldCategory = session.query(Category).filter_by(name=category_name).first()
-    cat_id = oldCategory.id
-    item=session.query(Item).filter_by(category_id=cat_id, name=item_name).one()
+    old_cat_id = oldCategory.id
+    item=session.query(Item).filter_by(category_id=old_cat_id, name=item_name).one()
     # Edit data
     if request.method == 'POST':
         # Check if user selected "New Category" in dropdown
@@ -112,14 +112,14 @@ def edit_item(category_name, item_name):
             session.commit()
         else:
             categoryName = request.form['categoryName']
-        # Delete old category if this was the last item in the old category
-        items_in_category = session.query(Item).filter_by(category_id=cat_id)
-        num_of_items = items_in_category.count()
-        # Delete old category
-        if num_of_items == 1:
-            session.delete(oldCategory)
         # Get category id for new item
         cat_id = session.query(Category).filter_by(name=categoryName).first().id
+        # Delete old category if this was the last item in the old category
+        items_in_category = session.query(Item).filter_by(category_id=old_cat_id)
+        num_of_items = items_in_category.count()
+        # Delete old category if new category is chosen and no items left
+        if num_of_items == 1 and old_cat_id != cat_id:
+            session.delete(oldCategory)
         # Save edits to item
         item.name = request.form['itemName']
         item.description = request.form['itemDesc']

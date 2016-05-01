@@ -85,15 +85,37 @@ def new_item():
     else:
         return render_template('item-new.html', categories=categories)
 # Edit existing item
-@app.route('/catalog/<string:category_name>/<string:item_name>/edit')
+@app.route('/catalog/<string:category_name>/<string:item_name>/edit',
+           methods=['GET','POST'])
 def edit_item(category_name, item_name):
     # Find categories
     categories = session.query(Category).all()
-    # Check if category is changed
-    # If new category, create new category
+    # Get category id for edited item
+    cat_id = session.query(Category).filter_by(name=category_name).first().id
+    item=session.query(Item).filter_by(category_id=cat_id, name=item_name).one()
     # Edit data
-    # Send a success message
-    return render_template('item-edit.html', categories=categories, item=item,
+    if request.method == 'POST':
+        # Check if category already exists, then use that category id
+        categoryName = request.form['categoryName']
+        # If not, create new category in database
+        # Get category id for new item
+        cat_id = session.query(Category).filter_by(name=categoryName).first().id
+        # Save edits to item
+        print "making edits...."
+        item.name = request.form['itemName']
+        item.description = request.form['itemDesc']
+        item.image = request.form['itemURL']
+        item.category_id = cat_id
+        # Save edits officially to database
+        print "saving edits..."
+        session.add(item)
+        session.commit()
+        # Send a success message
+        # Go back to main page
+        print "returning to main page..."
+        return redirect(url_for('catalog'))
+    else:
+        return render_template('item-edit.html', categories=categories, item=item,
                             category=category_name)
 # Delete item
 @app.route('/catalog/<string:category_name>/<string:item_name>/delete',

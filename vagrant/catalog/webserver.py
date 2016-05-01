@@ -86,7 +86,7 @@ def new_item():
         session.commit()
         # Send a success message
         # Go back to main page
-        return redirect(url_for('item', item_name=request.form['NewItemName'],
+        return redirect(url_for('item', item_name=request.form['newItemName'],
                                 category_name=categoryName))
     # Present new item form
     else:

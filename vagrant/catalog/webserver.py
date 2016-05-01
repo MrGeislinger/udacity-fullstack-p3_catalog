@@ -80,7 +80,8 @@ def new_item():
         session.commit()
         # Send a success message
         # Go back to main page
-        return redirect(url_for('catalog'))
+        return redirect(url_for('item', item_name=request.form['NewItemName'],
+                                category_name=categoryName))
     # Present new item form
     else:
         return render_template('item-new.html', categories=categories)

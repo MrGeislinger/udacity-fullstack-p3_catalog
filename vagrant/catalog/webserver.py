@@ -2,6 +2,10 @@ from datetime import date
 from flask import Flask, render_template, request, redirect, url_for, jsonify, flash
 app = Flask(__name__)
 
+# For login
+from flask import session as login_session # Stores user
+import random, string
+
 # Import CRUD Operations from Lesson 1
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -31,6 +35,15 @@ def catalog():
     recent_items = []
     return render_template('index.html', categories=categories,
                             recent_items=recent_items)
+
+# Create anti-forgery state token
+@app.route('/login')
+def showLogin():
+    state = ''.join(random.choice(string.ascii_uppercase + string.digits)
+                    for x in xrange(32))
+    login_session['state'] = state
+    return render_template('login.html')
+    #"The current session state is %s" % login_session['state']
 
 # Category page
 @app.route('/catalog/<string:category_name>/')

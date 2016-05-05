@@ -194,6 +194,9 @@ def item(category_name, item_name):
 # Add new item (new or existing category)
 @app.route('/catalog/new/', methods=['GET','POST'])
 def new_item():
+    # Stop user from accessing if not logged in and redirect to login page
+    if 'username' not in login_session:
+        return redirect('/login')
     # Find categories
     categories = session.query(Category).all()
     # If user submits form to create new item
@@ -232,6 +235,9 @@ def new_item():
 @app.route('/catalog/<string:category_name>/<string:item_name>/edit',
            methods=['GET','POST'])
 def edit_item(category_name, item_name):
+    # Stop user from accessing if not logged in and redirect to login page
+    if 'username' not in login_session:
+        return redirect('/login')
     # Find categories
     categories = session.query(Category).all()
     # Get category id for edited item
@@ -277,6 +283,9 @@ def edit_item(category_name, item_name):
 @app.route('/catalog/<string:category_name>/<string:item_name>/delete',
            methods=['GET','POST'])
 def delete_item(category_name, item_name):
+    # Stop user from accessing if not logged in and redirect to login page
+    if 'username' not in login_session:
+        return redirect('/login')
     # Find categories
     categories = session.query(Category).all()
     category = session.query(Category).filter_by(name=category_name).first()

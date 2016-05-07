@@ -1,5 +1,6 @@
 from datetime import date
-from flask import Flask, render_template, request, redirect, url_for, jsonify, flash
+from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import jsonify
 app = Flask(__name__)
 
 # For login
@@ -80,7 +81,7 @@ def gconnect():
     # Check that the access token is valid.
     access_token = credentials.access_token
     url = ('https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=%s'
-           % access_token)
+            %access_token)
     h = httplib2.Http()
     result = json.loads(h.request(url, 'GET')[1])
     # If there was an error in the access token info, abort.
@@ -107,8 +108,8 @@ def gconnect():
     stored_credentials = login_session.get('credentials')
     stored_gplus_id = login_session.get('gplus_id')
     if stored_credentials is not None and gplus_id == stored_gplus_id:
-        response = make_response(json.dumps('Current user is already connected.'),
-                                 200)
+        response = make_response(
+                    json.dumps('Current user is already connected.'), 200)
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -126,14 +127,15 @@ def gconnect():
     login_session['username'] = data['name']
     login_session['picture'] = data['picture']
     login_session['email'] = data['email']
-
+    # TODO (VictorLoren): Create a
     output = ''
     output += '<h1>Welcome, '
     output += login_session['username']
     output += '!</h1>'
     output += '<img src="'
     output += login_session['picture']
-    output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
+    output += '" style = "width: 300px; height: 300px; border-radius: 150px;'
+              '-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
     flash("you are now logged in as %s" % login_session['username'])
     print "done!"
     return output
@@ -149,7 +151,8 @@ def gdisconnect():
     	response = make_response(json.dumps('Current user not connected.'), 401)
     	response.headers['Content-Type'] = 'application/json'
     	return response
-    url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % login_session['access_token']
+    url = 'https://accounts.google.com/o/oauth2/revoke?token=%s'
+          %login_session['access_token']
     h = httplib2.Http()
     result = h.request(url, 'GET')[0]
     print 'result is '
@@ -164,8 +167,8 @@ def gdisconnect():
     	response.headers['Content-Type'] = 'application/json'
     	return response
     else:
-
-    	response = make_response(json.dumps('Failed to revoke token for given user.', 400))
+    	response = make_response(
+                    json.dumps('Failed to revoke token for given user.', 400))
     	response.headers['Content-Type'] = 'application/json'
     	return response
 
@@ -204,7 +207,7 @@ def new_item():
         # Check that user doesn't enter an empty string
         if request.form['newItemName'] == '':
             # Give an error message
-            flash("The item wasn't added! You need to type a name for the item!")
+            flash("The item wasn't added! You need to type a name!")
             # Return to new item page
             return render_template('item-new.html', categories=categories)
         # Check if user selected "New Category" in dropdown
@@ -243,7 +246,8 @@ def edit_item(category_name, item_name):
     # Get category id for edited item
     oldCategory = session.query(Category).filter_by(name=category_name).first()
     old_cat_id = oldCategory.id
-    item=session.query(Item).filter_by(category_id=old_cat_id, name=item_name).one()
+    item = session.query(Item)\
+            .filter_by(category_id=old_cat_id, name=item_name).one()
     # Edit data
     if request.method == 'POST':
         # Check if user selected "New Category" in dropdown
@@ -258,7 +262,8 @@ def edit_item(category_name, item_name):
         # Get category id for new item
         cat_id = session.query(Category).filter_by(name=categoryName).first().id
         # Delete old category if this was the last item in the old category
-        items_in_category = session.query(Item).filter_by(category_id=old_cat_id)
+        items_in_category = session.query(Item)\
+                                .filter_by(category_id=old_cat_id)
         num_of_items = items_in_category.count()
         # Delete old category if new category is chosen and no items left
         if num_of_items == 1 and old_cat_id != cat_id:
@@ -277,8 +282,8 @@ def edit_item(category_name, item_name):
         return redirect(url_for('item', item_name=request.form['itemName'],
                                 category_name=categoryName))
     else:
-        return render_template('item-edit.html', categories=categories, item=item,
-                            category=category_name)
+        return render_template('item-edit.html', categories=categories,
+                                item=item, category=category_name)
 # Delete item
 @app.route('/catalog/<string:category_name>/<string:item_name>/delete',
            methods=['GET','POST'])
@@ -313,7 +318,8 @@ def delete_item(category_name, item_name):
 @app.route('/catalog/<string:category_name>/<string:item_name>.json')
 def item_json(category_name, item_name):
     cat_id = session.query(Category).filter_by(name=category_name).first().id
-    item = session.query(Item).filter_by(category_id=cat_id, name=item_name).one()
+    item = session.query(Item)\
+            .filter_by(category_id=cat_id, name=item_name).one()
     return jsonify(item.serialize)
 
 

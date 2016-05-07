@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, timedelta
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask import jsonify
 app = Flask(__name__)
@@ -44,7 +44,13 @@ def catalog():
     # Find categories
     categories = session.query(Category).all()
     # TODO(VictorLoren): Read in recent items (make it a list)
-    recent_items = []
+    # Get items made in the last week
+    today = date.today()
+    days_ago = 7
+    recent_time = today - timedelta(days=days_ago)
+    recent_items = (session.query(Item)
+                           .filter(Item.date_added > recent_time)
+                           .all())
     return render_template('index.html', categories=categories,
                             recent_items=recent_items)
 

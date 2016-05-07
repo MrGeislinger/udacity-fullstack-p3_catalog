@@ -20,8 +20,7 @@
       {% endfor %}
     </div>
   </div>
-  <div id="recent-items">
-    <h2>Recent Items</h2>
+  <div id="messages">
     {% with messages = get_flashed_messages() %}
       {% if messages %}
         <ul>
@@ -31,6 +30,9 @@
         </ul>
       {% endif %}
     {% endwith %}
+  </div>
+  <div id="recent-items">
+    <h2>Recent Items</h2>
     <div class="list-recent-items">
       <ul>
         {% for ri in recent_items %}

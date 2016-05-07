@@ -15,7 +15,7 @@ from flask import make_response
 import requests
 #
 CLIENT_ID = json.loads(
-    open('client_secrets.json', 'r').read())['web']['client_id']
+          open('client_secrets.json', 'r').read())['web']['client_id']
 APPLICATION_NAME = "Sports Catalog Application"
 
 # Import CRUD Operations
@@ -93,14 +93,14 @@ def gconnect():
     gplus_id = credentials.id_token['sub']
     if result['user_id'] != gplus_id:
         response = make_response(
-            json.dumps("Token's user ID doesn't match given user ID."), 401)
+                 json.dumps("Token's user ID doesn't match given ID."), 401)
         response.headers['Content-Type'] = 'application/json'
         return response
 
     # Verify that the access token is valid for this app.
     if result['issued_to'] != CLIENT_ID:
         response = make_response(
-            json.dumps("Token's client ID does not match app's."), 401)
+                 json.dumps("Token's client ID does not match app's."), 401)
         print "Token's client ID does not match app's."
         response.headers['Content-Type'] = 'application/json'
         return response
@@ -109,7 +109,7 @@ def gconnect():
     stored_gplus_id = login_session.get('gplus_id')
     if stored_credentials is not None and gplus_id == stored_gplus_id:
         response = make_response(
-                    json.dumps('Current user is already connected.'), 200)
+                 json.dumps('Current user is already connected.'), 200)
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -127,15 +127,15 @@ def gconnect():
     login_session['username'] = data['name']
     login_session['picture'] = data['picture']
     login_session['email'] = data['email']
-    # TODO (VictorLoren): Create a
+    # TODO (VictorLoren): Create a template
     output = ''
     output += '<h1>Welcome, '
     output += login_session['username']
     output += '!</h1>'
     output += '<img src="'
     output += login_session['picture']
-    output += '" style = "width: 300px; height: 300px; border-radius: 150px;'
-              '-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
+    output += ('" style = "width: 300px; height: 300px; border-radius: 150px;'
+               '-webkit-border-radius: 150px;-moz-border-radius: 150px;">')
     flash("you are now logged in as %s" % login_session['username'])
     print "done!"
     return output
@@ -148,11 +148,11 @@ def gdisconnect():
     print login_session['username']
     if access_token is None:
  	print 'Access Token is None'
-    	response = make_response(json.dumps('Current user not connected.'), 401)
+        response = make_response(json.dumps('Current user not connected.'), 401)
     	response.headers['Content-Type'] = 'application/json'
     	return response
-    url = 'https://accounts.google.com/o/oauth2/revoke?token=%s'
-          %login_session['access_token']
+    url = ('https://accounts.google.com/o/oauth2/revoke?token=%s'
+           %login_session['access_token'])
     h = httplib2.Http()
     result = h.request(url, 'GET')[0]
     print 'result is '
@@ -181,7 +181,7 @@ def category(category_name):
     cat_id = session.query(Category).filter_by(name=category_name).first().id
     items = session.query(Item).filter_by(category_id=cat_id)
     return render_template('category.html', categories=categories, items=items,
-                            category=category_name)
+                           category=category_name)
 
 # Item page
 @app.route('/catalog/<string:category_name>/<string:item_name>/')
@@ -192,7 +192,7 @@ def item(category_name, item_name):
     cat_id = session.query(Category).filter_by(name=category_name).first().id
     item=session.query(Item).filter_by(category_id=cat_id, name=item_name).one()
     return render_template('item.html', categories=categories, item=item,
-                            category=category_name)
+                           category=category_name)
 
 # Add new item (new or existing category)
 @app.route('/catalog/new/', methods=['GET','POST'])
@@ -246,8 +246,9 @@ def edit_item(category_name, item_name):
     # Get category id for edited item
     oldCategory = session.query(Category).filter_by(name=category_name).first()
     old_cat_id = oldCategory.id
-    item = session.query(Item)\
-            .filter_by(category_id=old_cat_id, name=item_name).one()
+    item = (session.query(Item)
+                   .filter_by(category_id=old_cat_id, name=item_name)
+                   .one())
     # Edit data
     if request.method == 'POST':
         # Check if user selected "New Category" in dropdown
@@ -262,8 +263,8 @@ def edit_item(category_name, item_name):
         # Get category id for new item
         cat_id = session.query(Category).filter_by(name=categoryName).first().id
         # Delete old category if this was the last item in the old category
-        items_in_category = session.query(Item)\
-                                .filter_by(category_id=old_cat_id)
+        items_in_category = (session.query(Item)
+                                    .filter_by(category_id=old_cat_id))
         num_of_items = items_in_category.count()
         # Delete old category if new category is chosen and no items left
         if num_of_items == 1 and old_cat_id != cat_id:
@@ -283,7 +284,7 @@ def edit_item(category_name, item_name):
                                 category_name=categoryName))
     else:
         return render_template('item-edit.html', categories=categories,
-                                item=item, category=category_name)
+                               item=item, category=category_name)
 # Delete item
 @app.route('/catalog/<string:category_name>/<string:item_name>/delete',
            methods=['GET','POST'])
@@ -312,14 +313,14 @@ def delete_item(category_name, item_name):
         return redirect(url_for('catalog'))
     else:
         return render_template('item-delete.html', categories=categories,
-                                item=item, category=category_name)
+                               item=item, category=category_name)
 
 # Returning JSON for a category's items
 @app.route('/catalog/<string:category_name>/<string:item_name>.json')
 def item_json(category_name, item_name):
     cat_id = session.query(Category).filter_by(name=category_name).first().id
-    item = session.query(Item)\
-            .filter_by(category_id=cat_id, name=item_name).one()
+    item = (session.query(Item)
+                   .filter_by(category_id=cat_id, name=item_name).one())
     return jsonify(item.serialize)
 
 

@@ -3,7 +3,7 @@
 
 ## Instructions:
 * Run `webserver.py` to start the server
-* The web app will run at '0.0.0.0:8000/catalog'
+* The web app will run at 'localhost:8000/catalog'
 * Run `catalog.py` to create the (empty) catalog database which will create
 `catalog.db`
 

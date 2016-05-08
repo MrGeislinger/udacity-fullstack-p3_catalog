@@ -41,6 +41,14 @@ def style():
 @app.route('/')
 @app.route('/catalog/')
 def catalog():
+    # Login
+    login_button = True
+    if 'username' in login_session:
+        login_button = False
+    state = ''.join(random.choice(string.ascii_uppercase + string.digits)
+                        for x in xrange(32))
+    login_session['state'] = state
+    print "The current session state is %s" % login_session['state']
     # Find categories
     categories = session.query(Category).all()
     # TODO(VictorLoren): Read in recent items (make it a list)
@@ -51,8 +59,8 @@ def catalog():
     recent_items = (session.query(Item)
                            .filter(Item.date_added > recent_time)
                            .all())
-    return render_template('index.html', categories=categories,
-                            recent_items=recent_items)
+    return render_template('index.html', categories=categories, STATE=state,
+                           recent_items=recent_items, login_button=login_button)
 
 # Create anti-forgery state token
 @app.route('/login')

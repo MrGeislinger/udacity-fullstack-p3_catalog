@@ -230,7 +230,8 @@ def item(category_name, item_name):
 def new_item():
     # Stop user from accessing if not logged in and redirect to login page
     if 'username' not in login_session:
-        return redirect('/login')
+        flash("Login to visit that page")
+        return redirect('/catalog')
     # Find categories
     categories = session.query(Category).all()
     # If user submits form to create new item
@@ -271,7 +272,8 @@ def new_item():
 def edit_item(category_name, item_name):
     # Stop user from accessing if not logged in and redirect to login page
     if 'username' not in login_session:
-        return redirect('/login')
+        flash("Login to visit that page")
+        return redirect('/catalog')
     # Find categories
     categories = session.query(Category).all()
     # Get category id for edited item
@@ -322,7 +324,8 @@ def edit_item(category_name, item_name):
 def delete_item(category_name, item_name):
     # Stop user from accessing if not logged in and redirect to login page
     if 'username' not in login_session:
-        return redirect('/login')
+        flash("Login to visit that page")
+        return redirect('/catalog')
     # Find categories
     categories = session.query(Category).all()
     category = session.query(Category).filter_by(name=category_name).first()

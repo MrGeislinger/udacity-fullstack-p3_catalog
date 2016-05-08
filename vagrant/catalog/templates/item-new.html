@@ -36,16 +36,16 @@
       <input name="newItemName" type="text" size="30">
       <p>Category:</p>
       <!--Category selected from dropdown-->
-      <select name="categoryName" onchange="newCategory(this);">
+      <select id="category-select" name="categoryName" onchange="newCategory(this);">
         {% for c in categories %}
           <option value="{{c.name}}">{{c.name}}</option>
         {% endfor %}
-        <option value="newCategory">New Category</option>
+        <option value="newCategory" selected>New Category</option>
       </select>
       <!--If "New Category" selected, allow user to create new category-->
       <!--Script to create a new category when you select "New Category" in dropdown-->
       <script src="{{url_for('static', filename='newCategory.js')}}"></script>
-      <div id="ifNewCategory" style="display: none;">
+      <div id="ifNewCategory" style="display:block;">
         <label for="newCat">Enter your new category name for this item:</label>
         <input name="newCat" type="text" size="30">
       </div>

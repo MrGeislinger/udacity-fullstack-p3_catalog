@@ -155,7 +155,7 @@ def gdisconnect():
     print 'User name is: '
     print login_session['username']
     if access_token is None:
- 	print 'Access Token is None'
+        print 'Access Token is None'
         response = make_response(json.dumps('Current user not connected.'), 401)
     	response.headers['Content-Type'] = 'application/json'
     	return response
@@ -166,19 +166,34 @@ def gdisconnect():
     print 'result is '
     print result
     if result['status'] == '200':
-	del login_session['access_token']
+        del login_session['access_token']
     	del login_session['gplus_id']
     	del login_session['username']
     	del login_session['email']
     	del login_session['picture']
     	response = make_response(json.dumps('Successfully disconnected.'), 200)
     	response.headers['Content-Type'] = 'application/json'
-    	return response
+    	# return response
     else:
     	response = make_response(
                     json.dumps('Failed to revoke token for given user.', 400))
     	response.headers['Content-Type'] = 'application/json'
-    	return response
+    	# return response
+    # Find categories
+    categories = session.query(Category).all()
+    #
+    login_button = True
+    # Get items made in the last week
+    today = date.today()
+    days_ago = 7
+    recent_time = today - timedelta(days=days_ago)
+    recent_items = (session.query(Item)
+                           .filter(Item.date_added > recent_time)
+                           .all())
+    #
+    return render_template('logout.html', categories=categories,
+                           recent_items=recent_items, login_button=login_button)
+    # return make_response(json.dumps('Successfully disconnected.'), 200)
 
 # Category page
 @app.route('/catalog/<string:category_name>/')

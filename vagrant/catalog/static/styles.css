@@ -44,6 +44,11 @@ div#categories {
   color: #4d4d4d;
 }
 
+div#main-content {
+  float: left;
+  padding: 5px 5px 5px 25px;
+}
+
 div#recent-items {
   float: left;
   padding: 5px 5px 5px 25px;

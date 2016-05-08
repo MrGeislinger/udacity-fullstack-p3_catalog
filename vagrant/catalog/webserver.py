@@ -51,7 +51,6 @@ def catalog():
     print "The current session state is %s" % login_session['state']
     # Find categories
     categories = session.query(Category).all()
-    # TODO(VictorLoren): Read in recent items (make it a list)
     # Get items made in the last week
     today = date.today()
     days_ago = 7
@@ -68,7 +67,7 @@ def showLogin():
     state = ''.join(random.choice(string.ascii_uppercase + string.digits)
                     for x in xrange(32))
     login_session['state'] = state
-    print "The current session state is %s" % login_session['state']
+    print "The current session state is %s" %login_session['state']
     return render_template('login.html', STATE=state)
 
 @app.route('/gconnect', methods=['POST'])
@@ -143,15 +142,10 @@ def gconnect():
     login_session['email'] = data['email']
     # TODO (VictorLoren): Create a template
     output = ''
-    output += '<h1>Welcome, '
+    output += '<h3>Welcome, '
     output += login_session['username']
-    output += '!</h1>'
-    output += '<img src="'
-    output += login_session['picture']
-    output += ('" style = "width: 300px; height: 300px; border-radius: 150px;'
-               '-webkit-border-radius: 150px;-moz-border-radius: 150px;">')
-    flash("you are now logged in as %s" % login_session['username'])
-    print "done!"
+    output += '!</h3>'
+    flash("You are now logged in as %s" % login_session['username'])
     return output
 
 @app.route('/gdisconnect')
@@ -189,24 +183,32 @@ def gdisconnect():
 # Category page
 @app.route('/catalog/<string:category_name>/')
 def category(category_name):
+    # Login
+    login_button = True
+    if 'username' in login_session:
+        login_button = False
     # Find categories
     categories = session.query(Category).all()
     #Get items from category
     cat_id = session.query(Category).filter_by(name=category_name).first().id
     items = session.query(Item).filter_by(category_id=cat_id)
     return render_template('category.html', categories=categories, items=items,
-                           category=category_name)
+                           category=category_name, login_button=login_button)
 
 # Item page
 @app.route('/catalog/<string:category_name>/<string:item_name>/')
 def item(category_name, item_name):
+    # Login
+    login_button = True
+    if 'username' in login_session:
+        login_button = False
     # Find categories
     categories = session.query(Category).all()
     #Get items from category
     cat_id = session.query(Category).filter_by(name=category_name).first().id
     item=session.query(Item).filter_by(category_id=cat_id, name=item_name).one()
     return render_template('item.html', categories=categories, item=item,
-                           category=category_name)
+                           category=category_name, login_button=login_button)
 
 # Add new item (new or existing category)
 @app.route('/catalog/new/', methods=['GET','POST'])

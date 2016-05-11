@@ -34,6 +34,7 @@ session = DBSession()
 # CSS
 @app.route('/styles.css')
 def style():
+    """Return the CSS stylesheet for webpages to be used in Flask framework."""
     with open('templates/styles.css', 'r') as stylesheet:
         output = stylesheet.read()
     return output
@@ -43,6 +44,7 @@ def style():
 @app.route('/')
 @app.route('/catalog/')
 def catalog():
+    """Return a rendered main webpage to be used in Flask framework."""
     # Login
     login_button = True
     if 'username' in login_session:
@@ -70,6 +72,7 @@ def catalog():
 # Create anti-forgery state token
 @app.route('/login')
 def showLogin():
+    """Return a login webpage template to be used in Flask framework.""""
     state = ''.join(random.choice(string.ascii_uppercase + string.digits)
                     for x in xrange(32))
     login_session['state'] = state
@@ -79,6 +82,7 @@ def showLogin():
 
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
+    """Create user's login information and return ending status for user."""
     # Validate state token
     if request.args.get('state') != login_session['state']:
         response = make_response(json.dumps('Invalid state parameter.'), 401)
@@ -158,6 +162,7 @@ def gconnect():
 
 @app.route('/gdisconnect')
 def gdisconnect():
+    """Logout user and return a logout status."""
     access_token = login_session['access_token']
     print 'In gdisconnect access token is %s', access_token
     print 'User name is: '
@@ -204,6 +209,14 @@ def gdisconnect():
 # Category page
 @app.route('/catalog/<string:category_name>/')
 def category(category_name):
+    """Create a webpage using Flask framework when user visits a category page.
+
+    Args:
+        category_name: Name of the category user visits
+
+    Returns:
+        HTML template for category webpage using Flask framework
+    """
     # Login
     login_button = True
     if 'username' in login_session:
@@ -220,6 +233,15 @@ def category(category_name):
 # Item page
 @app.route('/catalog/<string:category_name>/<string:item_name>/')
 def item(category_name, item_name):
+    """Create a webpage using Flask framework when user visits an item's page.
+
+    Args:
+        category_name: Name of the category of the item's page
+        item_name: Name of item the user is viewing
+
+    Returns:
+        HTML template for item's webpage using Flask framework
+    """
     # Login
     login_button = True
     if 'username' in login_session:
@@ -237,6 +259,7 @@ def item(category_name, item_name):
 # Add new item (new or existing category)
 @app.route('/catalog/new/', methods=['GET', 'POST'])
 def new_item():
+    """Create a new item in the database via a form and return a webpage."""
     # Stop user from accessing if not logged in and redirect to login page
     if 'username' not in login_session:
         flash("Login to visit that page")
@@ -282,6 +305,15 @@ def new_item():
 @app.route('/catalog/<string:category_name>/<string:item_name>/edit',
            methods=['GET', 'POST'])
 def edit_item(category_name, item_name):
+    """Edit an item from the database and return webpage of resulting item.
+
+    Args:
+        category_name: Name of the category of the item the user is editing
+        item_name: Name of item the user is editing
+
+    Returns:
+        HTML template for the new item's webpage using Flask framework
+    """
     # Stop user from accessing if not logged in and redirect to login page
     if 'username' not in login_session:
         flash("Login to visit that page")
@@ -337,6 +369,16 @@ def edit_item(category_name, item_name):
 @app.route('/catalog/<string:category_name>/<string:item_name>/delete',
            methods=['GET', 'POST'])
 def delete_item(category_name, item_name):
+    """Delete an item from the database and return a confirmation webpage.
+
+    Args:
+        category_name: Name of the category of the item the user is deleting
+        item_name: Name of item the user is deleting
+
+    Returns:
+        HTML template for the item's deletion confirmation webpage using Flask
+        framework
+    """
     # Stop user from accessing if not logged in and redirect to login page
     if 'username' not in login_session:
         flash("Login to visit that page")
@@ -369,6 +411,15 @@ def delete_item(category_name, item_name):
 # Returning JSON for a category's items
 @app.route('/catalog/<string:category_name>/<string:item_name>.json')
 def item_json(category_name, item_name):
+    """Return a JSON file of a specific item in the database.
+
+    Args:
+        category_name: Name of the category of the item
+        item_name: Name of item
+
+    Returns:
+        JSON format of item's data
+    """
     cat_id = session.query(Category).filter_by(name=category_name).first().id
     item = (session.query(Item)
                    .filter_by(category_id=cat_id, name=item_name).one())
@@ -378,6 +429,14 @@ def item_json(category_name, item_name):
 # Returning JSON for a category
 @app.route('/catalog/<string:category_name>.json')
 def category_json(category_name):
+    """Return a JSON file of a specific category in the database.
+
+    Args:
+        category_name: Name of the category
+
+    Returns:
+        JSON format of category's data
+    """
     cat_id = session.query(Category).filter_by(name=category_name).first().id
     items = session.query(Item).filter_by(category_id=cat_id).all()
     return jsonify(Items=[i.serialize for i in items])
@@ -386,6 +445,7 @@ def category_json(category_name):
 # Returning JSON for catalog
 @app.route('/catalog.json')
 def catalog_json():
+    """Return a JSON file of the complete catalog in the database."""
     categories = session.query(Category).all()
     serializedCategories = []
     for c in categories:

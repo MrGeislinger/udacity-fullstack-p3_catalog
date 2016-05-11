@@ -72,7 +72,7 @@ def catalog():
 # Create anti-forgery state token
 @app.route('/login')
 def showLogin():
-    """Return a login webpage template to be used in Flask framework.""""
+    """Return a login webpage template to be used in Flask framework."""
     state = ''.join(random.choice(string.ascii_uppercase + string.digits)
                     for x in xrange(32))
     login_session['state'] = state

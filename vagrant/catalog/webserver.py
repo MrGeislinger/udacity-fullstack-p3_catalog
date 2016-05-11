@@ -17,6 +17,8 @@ import requests
 from datetime import date, timedelta
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask import jsonify
+#
+from functools import wraps
 
 app = Flask(__name__)
 CLIENT_ID = json.loads(
@@ -67,6 +69,17 @@ def catalog():
                            categories=categories,
                            recent_items=recent_items,
                            login_button=login_button)
+
+
+# Stop user from accessing if not logged in and redirect to login page
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'username' not in login_session:
+            flash("Login to visit that page")
+            return redirect('/catalog')
+        return f(*args, **kwargs)
+    return decorated_function
 
 
 # Create anti-forgery state token
@@ -258,12 +271,9 @@ def item(category_name, item_name):
 
 # Add new item (new or existing category)
 @app.route('/catalog/new/', methods=['GET', 'POST'])
+@login_required
 def new_item():
     """Create a new item in the database via a form and return a webpage."""
-    # Stop user from accessing if not logged in and redirect to login page
-    if 'username' not in login_session:
-        flash("Login to visit that page")
-        return redirect('/catalog')
     # Find categories
     categories = session.query(Category).all()
     # If user submits form to create new item
@@ -304,6 +314,7 @@ def new_item():
 # Edit existing item
 @app.route('/catalog/<string:category_name>/<string:item_name>/edit',
            methods=['GET', 'POST'])
+@login_required
 def edit_item(category_name, item_name):
     """Edit an item from the database and return webpage of resulting item.
 
@@ -314,10 +325,6 @@ def edit_item(category_name, item_name):
     Returns:
         HTML template for the new item's webpage using Flask framework
     """
-    # Stop user from accessing if not logged in and redirect to login page
-    if 'username' not in login_session:
-        flash("Login to visit that page")
-        return redirect('/catalog')
     # Find categories
     categories = session.query(Category).all()
     # Get category id for edited item
@@ -368,6 +375,7 @@ def edit_item(category_name, item_name):
 # Delete item
 @app.route('/catalog/<string:category_name>/<string:item_name>/delete',
            methods=['GET', 'POST'])
+@login_required
 def delete_item(category_name, item_name):
     """Delete an item from the database and return a confirmation webpage.
 
@@ -379,10 +387,6 @@ def delete_item(category_name, item_name):
         HTML template for the item's deletion confirmation webpage using Flask
         framework
     """
-    # Stop user from accessing if not logged in and redirect to login page
-    if 'username' not in login_session:
-        flash("Login to visit that page")
-        return redirect('/catalog')
     # Find categories
     categories = session.query(Category).all()
     category = session.query(Category).filter_by(name=category_name).first()

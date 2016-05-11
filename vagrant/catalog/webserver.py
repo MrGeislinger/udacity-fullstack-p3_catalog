@@ -463,4 +463,5 @@ def catalog_json():
 if __name__ == '__main__':
     app.secret_key = 'very_secret_key'
     app.debug = True
-    app.run(host='localhost', port=8000)
+    # Go to `localhost:8000/`
+    app.run(host='0.0.0.0', port=8000)

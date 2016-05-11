@@ -1,11 +1,11 @@
-from datetime import date, timedelta
-from flask import Flask, render_template, request, redirect, url_for, flash
-from flask import jsonify
-app = Flask(__name__)
-
-# For login
-from flask import session as login_session # Stores user
-import random, string
+# Import CRUD Operations
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from catalog import Base, Category, Item
+# For login to store user
+from flask import session as login_session
+import random
+import string
 #
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
@@ -14,14 +14,14 @@ import json
 from flask import make_response
 import requests
 #
+from datetime import date, timedelta
+from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import jsonify
+
+app = Flask(__name__)
 CLIENT_ID = json.loads(
           open('client_secrets.json', 'r').read())['web']['client_id']
 APPLICATION_NAME = "Sports Catalog Application"
-
-# Import CRUD Operations
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from catalog import Base, Category, Item
 
 # Create session and connect to DB
 engine = create_engine('sqlite:///catalog.db')
@@ -30,12 +30,14 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
+
 # CSS
 @app.route('/styles.css')
 def style():
-    with open('templates/styles.css','r') as stylesheet:
+    with open('templates/styles.css', 'r') as stylesheet:
         output = stylesheet.read()
     return output
+
 
 # Home page
 @app.route('/')
@@ -46,7 +48,7 @@ def catalog():
     if 'username' in login_session:
         login_button = False
     state = ''.join(random.choice(string.ascii_uppercase + string.digits)
-                        for x in xrange(32))
+                    for x in xrange(32))
     login_session['state'] = state
     print "The current session state is %s" % login_session['state']
     # Find categories
@@ -58,8 +60,12 @@ def catalog():
     recent_items = (session.query(Item)
                            .filter(Item.date_added > recent_time)
                            .all())
-    return render_template('index.html', categories=categories, STATE=state,
-                           recent_items=recent_items, login_button=login_button)
+    return render_template('index.html',
+                           STATE=state,
+                           categories=categories,
+                           recent_items=recent_items,
+                           login_button=login_button)
+
 
 # Create anti-forgery state token
 @app.route('/login')
@@ -67,8 +73,9 @@ def showLogin():
     state = ''.join(random.choice(string.ascii_uppercase + string.digits)
                     for x in xrange(32))
     login_session['state'] = state
-    print "The current session state is %s" %login_session['state']
+    print "The current session state is %s" % login_session['state']
     return render_template('login.html', STATE=state)
+
 
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
@@ -94,7 +101,7 @@ def gconnect():
     # Check that the access token is valid.
     access_token = credentials.access_token
     url = ('https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=%s'
-            %access_token)
+           % access_token)
     h = httplib2.Http()
     result = json.loads(h.request(url, 'GET')[1])
     # If there was an error in the access token info, abort.
@@ -148,6 +155,7 @@ def gconnect():
     flash("You are now logged in as %s" % login_session['username'])
     return output
 
+
 @app.route('/gdisconnect')
 def gdisconnect():
     access_token = login_session['access_token']
@@ -156,29 +164,28 @@ def gdisconnect():
     print login_session['username']
     if access_token is None:
         print 'Access Token is None'
-        response = make_response(json.dumps('Current user not connected.'), 401)
-    	response.headers['Content-Type'] = 'application/json'
-    	return response
+        response = make_response(
+                 json.dumps('Current user not connected.'), 401)
+        response.headers['Content-Type'] = 'application/json'
+        return response
     url = ('https://accounts.google.com/o/oauth2/revoke?token=%s'
-           %login_session['access_token'])
+           % login_session['access_token'])
     h = httplib2.Http()
     result = h.request(url, 'GET')[0]
     print 'result is '
     print result
     if result['status'] == '200':
         del login_session['access_token']
-    	del login_session['gplus_id']
-    	del login_session['username']
-    	del login_session['email']
-    	del login_session['picture']
-    	response = make_response(json.dumps('Successfully disconnected.'), 200)
-    	response.headers['Content-Type'] = 'application/json'
-    	# return response
+        del login_session['gplus_id']
+        del login_session['username']
+        del login_session['email']
+        del login_session['picture']
+        response = make_response(json.dumps('Successfully disconnected.'), 200)
+        response.headers['Content-Type'] = 'application/json'
     else:
-    	response = make_response(
+        response = make_response(
                     json.dumps('Failed to revoke token for given user.', 400))
-    	response.headers['Content-Type'] = 'application/json'
-    	# return response
+        response.headers['Content-Type'] = 'application/json'
     # Find categories
     categories = session.query(Category).all()
     #
@@ -190,10 +197,9 @@ def gdisconnect():
     recent_items = (session.query(Item)
                            .filter(Item.date_added > recent_time)
                            .all())
-    #
-    return render_template('logout.html', categories=categories,
-                           recent_items=recent_items, login_button=login_button)
-    # return make_response(json.dumps('Successfully disconnected.'), 200)
+    return render_template('logout.html', recent_items=recent_items,
+                           categories=categories, login_button=login_button)
+
 
 # Category page
 @app.route('/catalog/<string:category_name>/')
@@ -204,11 +210,12 @@ def category(category_name):
         login_button = False
     # Find categories
     categories = session.query(Category).all()
-    #Get items from category
+    # Get items from category
     cat_id = session.query(Category).filter_by(name=category_name).first().id
     items = session.query(Item).filter_by(category_id=cat_id)
     return render_template('category.html', categories=categories, items=items,
                            category=category_name, login_button=login_button)
+
 
 # Item page
 @app.route('/catalog/<string:category_name>/<string:item_name>/')
@@ -219,14 +226,16 @@ def item(category_name, item_name):
         login_button = False
     # Find categories
     categories = session.query(Category).all()
-    #Get items from category
+    # Get items from category
     cat_id = session.query(Category).filter_by(name=category_name).first().id
-    item=session.query(Item).filter_by(category_id=cat_id, name=item_name).one()
+    item = (session.query(Item)
+                   .filter_by(category_id=cat_id, name=item_name).one())
     return render_template('item.html', categories=categories, item=item,
                            category=category_name, login_button=login_button)
 
+
 # Add new item (new or existing category)
-@app.route('/catalog/new/', methods=['GET','POST'])
+@app.route('/catalog/new/', methods=['GET', 'POST'])
 def new_item():
     # Stop user from accessing if not logged in and redirect to login page
     if 'username' not in login_session:
@@ -252,7 +261,8 @@ def new_item():
         else:
             categoryName = request.form['categoryName']
         # Get category id for new item
-        cat_id = session.query(Category).filter_by(name=categoryName).first().id
+        cat_id = (session.query(Category)
+                         .filter_by(name=categoryName).first().id)
         newItem = Item(name=request.form['newItemName'],
                        description=request.form['newItemDesc'],
                        date_added=date.today(),
@@ -266,9 +276,11 @@ def new_item():
     # Present new item form
     else:
         return render_template('item-new.html', categories=categories)
+
+
 # Edit existing item
 @app.route('/catalog/<string:category_name>/<string:item_name>/edit',
-           methods=['GET','POST'])
+           methods=['GET', 'POST'])
 def edit_item(category_name, item_name):
     # Stop user from accessing if not logged in and redirect to login page
     if 'username' not in login_session:
@@ -294,7 +306,8 @@ def edit_item(category_name, item_name):
         else:
             categoryName = request.form['categoryName']
         # Get category id for new item
-        cat_id = session.query(Category).filter_by(name=categoryName).first().id
+        cat_id = (session.query(Category)
+                         .filter_by(name=categoryName).first().id)
         # Delete old category if this was the last item in the old category
         items_in_category = (session.query(Item)
                                     .filter_by(category_id=old_cat_id))
@@ -318,9 +331,11 @@ def edit_item(category_name, item_name):
     else:
         return render_template('item-edit.html', categories=categories,
                                item=item, category=category_name)
+
+
 # Delete item
 @app.route('/catalog/<string:category_name>/<string:item_name>/delete',
-           methods=['GET','POST'])
+           methods=['GET', 'POST'])
 def delete_item(category_name, item_name):
     # Stop user from accessing if not logged in and redirect to login page
     if 'username' not in login_session:
@@ -330,7 +345,8 @@ def delete_item(category_name, item_name):
     categories = session.query(Category).all()
     category = session.query(Category).filter_by(name=category_name).first()
     cat_id = category.id
-    item=session.query(Item).filter_by(category_id=cat_id, name=item_name).one()
+    item = (session.query(Item)
+                   .filter_by(category_id=cat_id, name=item_name).one())
     if request.method == 'POST':
         # Check if this item is all that is left in category
         items_in_category = session.query(Item).filter_by(category_id=cat_id)
@@ -342,12 +358,13 @@ def delete_item(category_name, item_name):
             session.delete(category)
         session.commit()
         # Send a success message
-        flash("%s item has been deleted." %item.name)
+        flash("%s item has been deleted." % item.name)
         # Return to category page
         return redirect(url_for('catalog'))
     else:
         return render_template('item-delete.html', categories=categories,
                                item=item, category=category_name)
+
 
 # Returning JSON for a category's items
 @app.route('/catalog/<string:category_name>/<string:item_name>.json')
@@ -365,6 +382,7 @@ def category_json(category_name):
     items = session.query(Item).filter_by(category_id=cat_id).all()
     return jsonify(Items=[i.serialize for i in items])
 
+
 # Returning JSON for catalog
 @app.route('/catalog.json')
 def catalog_json():
@@ -372,7 +390,7 @@ def catalog_json():
     serializedCategories = []
     for c in categories:
         # Find all this category's items
-        items = session.query(Item).filter_by(category_id = c.id).all()
+        items = session.query(Item).filter_by(category_id=c.id).all()
         serializedItems = []
         for i in items:
             serializedItems.append(i.serialize)
@@ -381,8 +399,6 @@ def catalog_json():
         category['Items'] = serializedItems
         serializedCategories.append(category)
     return jsonify(Category=serializedCategories)
-
-
 
 if __name__ == '__main__':
     app.secret_key = 'very_secret_key'
